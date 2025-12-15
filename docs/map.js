@@ -5,12 +5,21 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   attribution: '© OpenStreetMap'
 }).addTo(map);
 
-// TEMP dummy data (replace after Step 3)
-const dummy = [
-  [28.61, 77.23, 0.8], 
-  [19.07, 72.87, 0.6],
-  [13.08, 80.27, 0.4]  
-];
+fetch('aqi_latest.json')
+  .then(r => r.json())
+  .then(points => {
+    const heat = points.map(p => [
+      p.lat,
+      p.lon,
+      Math.min(p.aqi / 500, 1)
+    ]);
+
+    L.heatLayer(heat, {
+      radius: 40,
+      blur: 25,
+      maxZoom: 6
+    }).addTo(map);
+  });
 
 L.heatLayer(dummy, {
   radius: 40,
