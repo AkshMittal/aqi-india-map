@@ -17,30 +17,39 @@ jobs:
           OPENAQ_API_KEY: ${{ secrets.OPENAQ_API_KEY }}
         run: |
           curl -s \
-          -H "X-API-Key: $OPENAQ_API_KEY" \
-          "https://api.openaq.org/v2/latest?country=IN&limit=1000" \
-          > raw.json
+            -H "X-API-Key: $OPENAQ_API_KEY" \
+            "https://api.openaq.org/v3/measurements?country=IN&parameter=pm25&limit=1000" \
+            > raw.json
 
 
-      - name: Debug OpenAQ response
+
+      - name: Transform data
         run: |
-          cat > debug.js << 'EOF'
+          cat > transform.js << 'EOF'
           const fs = require('fs');
 
           const raw = JSON.parse(fs.readFileSync('raw.json', 'utf8'));
+          const out = [];
 
-          console.log('Root keys:', Object.keys(raw));
-          console.log('Results exists:', Array.isArray(raw.results));
-          console.log('Results length:', raw.results?.length);
+          for (const r of raw.results || []) {
+            if (!r.coordinates) continue;
+            if (typeof r.value !== 'number') continue;
 
-          if (raw.results && raw.results.length > 0) {
-            const r = raw.results[0];
-            console.log('First result keys:', Object.keys(r));
-            console.log('Measurements sample:', r.measurements);
+            const aqi = Math.min(r.value * 4, 500);
+
+            out.push({
+              lat: r.coordinates.latitude,
+              lon: r.coordinates.longitude,
+              aqi
+            });
           }
+
+          console.log('Stations processed:', out.length);
+          fs.writeFileSync('docs/aqi_latest.json', JSON.stringify(out, null, 2));
           EOF
 
-          node debug.js
+          node transform.js
+
 
 
 
