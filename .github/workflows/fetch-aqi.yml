@@ -23,24 +23,24 @@ jobs:
 
 
       - name: Debug OpenAQ response
-          run: |
-            cat > debug.js << 'EOF'
-            const fs = require('fs');
+        run: |
+          cat > debug.js << 'EOF'
+          const fs = require('fs');
 
-            const raw = JSON.parse(fs.readFileSync('raw.json', 'utf8'));
+          const raw = JSON.parse(fs.readFileSync('raw.json', 'utf8'));
 
-            console.log('Root keys:', Object.keys(raw));
-            console.log('Results exists:', Array.isArray(raw.results));
-            console.log('Results length:', raw.results?.length);
+          console.log('Root keys:', Object.keys(raw));
+          console.log('Results exists:', Array.isArray(raw.results));
+          console.log('Results length:', raw.results?.length);
 
-            if (raw.results && raw.results.length > 0) {
-              const r = raw.results[0];
-              console.log('First result keys:', Object.keys(r));
-              console.log('Measurements sample:', r.measurements);
-            }
-            EOF
+          if (raw.results && raw.results.length > 0) {
+            const r = raw.results[0];
+            console.log('First result keys:', Object.keys(r));
+            console.log('Measurements sample:', r.measurements);
+          }
+          EOF
 
-            node debug.js
+          node debug.js
 
 
 
