@@ -18,7 +18,7 @@ jobs:
         run: |
           curl -s \
             -H "X-API-Key: $OPENAQ_API_KEY" \
-            "https://api.openaq.org/v3/measurements?country=IN&parameter=pm25&limit=1000" \
+            "https://api.openaq.org/v3/measurements?country=IN&parameter=pm2.5&date_from=$(date -u -d '2 days ago' +%Y-%m-%d)&limit=1000" \
             > raw.json
 
 
