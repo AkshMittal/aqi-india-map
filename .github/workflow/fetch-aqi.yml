@@ -1,0 +1,46 @@
+name: Fetch AQI data
+
+on:
+  schedule:
+    - cron: '0 */6 * * *'
+  workflow_dispatch:
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Fetch AQI from OpenAQ
+        env:
+          OPENAQ_API_KEY: ${{ secrets.OPENAQ_API_KEY }}
+        run: |
+          curl -s \
+            -H "X-API-Key: $OPENAQ_API_KEY" \
+            "https://api.openaq.org/v2/latest?country=IN&parameter=pm25&limit=1000" \
+            > raw.json
+
+      - name: Debug OpenAQ response
+  run: |
+    node - << 'EOF'
+    const fs = require('fs');
+    const raw = JSON.parse(fs.readFileSync('raw.json'));
+
+    console.log('Keys at root:', Object.keys(raw));
+    console.log('Results length:', raw.results?.length);
+
+    if (raw.results && raw.results.length > 0) {
+      console.log('First result keys:', Object.keys(raw.results[0]));
+      console.log('First result sample:', JSON.stringify(raw.results[0], null, 2));
+    }
+    EOF
+
+
+      - name: Commit updated data
+        run: |
+          git config user.name "aqi-bot"
+          git config user.email "bot@github.com"
+          git add docs/aqi_latest.json
+          git commit -m "Update AQI data" || echo "No changes"
+          git push
