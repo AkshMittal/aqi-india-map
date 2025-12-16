@@ -16,10 +16,12 @@ jobs:
         env:
           OPENAQ_API_KEY: ${{ secrets.OPENAQ_API_KEY }}
         run: |
+          echo "Key length: ${#OPENAQ_API_KEY}"
           curl -s \
-            -H "X-API-Key: $OPENAQ_API_KEY" \
+            -H "Authorization: Bearer $OPENAQ_API_KEY" \
             "https://api.openaq.org/v3/locations?country=IN&limit=1000" \
             > raw.json
+
 
 
 
