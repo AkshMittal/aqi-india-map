@@ -18,8 +18,9 @@ jobs:
         run: |
           curl -s \
             -H "X-API-Key: $OPENAQ_API_KEY" \
-            "https://api.openaq.org/v3/measurements?country=IN&parameter=pm2.5&date_from=$(date -u -d '2 days ago' +%Y-%m-%d)&limit=1000" \
+            "https://api.openaq.org/v3/locations?country=IN&limit=1000" \
             > raw.json
+
 
 
 
@@ -33,9 +34,15 @@ jobs:
 
           for (const r of raw.results || []) {
             if (!r.coordinates) continue;
-            if (typeof r.value !== 'number') continue;
+            if (!Array.isArray(r.parameters)) continue;
 
-            const aqi = Math.min(r.value * 4, 500);
+            const pm = r.parameters.find(p =>
+              p.parameter === 'pm2.5' || p.parameter === 'pm25'
+            );
+
+            if (!pm || typeof pm.lastValue !== 'number') continue;
+
+            const aqi = Math.min(pm.lastValue * 4, 500);
 
             out.push({
               lat: r.coordinates.latitude,
