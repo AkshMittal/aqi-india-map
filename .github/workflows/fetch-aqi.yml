@@ -17,15 +17,17 @@ jobs:
           OPENAQ_API_KEY: ${{ secrets.OPENAQ_API_KEY }}
         run: |
           curl -s \
-            -H "X-API-Key: $OPENAQ_API_KEY" \
-            "https://api.openaq.org/v2/latest?country=IN&limit=1000" \
-            > raw.json
+          -H "X-API-Key: $OPENAQ_API_KEY" \
+          "https://api.openaq.org/v2/latest?country=IN&limit=1000" \
+          > raw.json
+
 
       - name: Debug OpenAQ response
           run: |
-            node - << 'EOF'
+            cat > debug.js << 'EOF'
             const fs = require('fs');
-            const raw = JSON.parse(fs.readFileSync('raw.json'));
+
+            const raw = JSON.parse(fs.readFileSync('raw.json', 'utf8'));
 
             console.log('Root keys:', Object.keys(raw));
             console.log('Results exists:', Array.isArray(raw.results));
@@ -37,6 +39,9 @@ jobs:
               console.log('Measurements sample:', r.measurements);
             }
             EOF
+
+            node debug.js
+
 
 
       - name: Commit updated data
