@@ -5,7 +5,7 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   attribution: '© OpenStreetMap'
 }).addTo(map);
 
-fetch('aqi_latest.json')
+fetch('aqi-data-fetch.akshmittal006.workers.dev/aqi')
   .then(r => r.json())
   .then(points => {
     const heat = points.map(p => [
