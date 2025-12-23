@@ -5,7 +5,7 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   attribution: '© OpenStreetMap'
 }).addTo(map);
 
-fetch('aqi-data-fetch.akshmittal006.workers.dev/aqi')
+fetch('https://aqi-data-fetch.akshmittal006.workers.dev/aqi')
   .then(r => r.json())
   .then(points => {
     const heat = points.map(p => [
@@ -20,9 +20,3 @@ fetch('aqi-data-fetch.akshmittal006.workers.dev/aqi')
       maxZoom: 6
     }).addTo(map);
   });
-
-L.heatLayer(dummy, {
-  radius: 40,
-  blur: 25,
-  maxZoom: 6
-}).addTo(map);
