@@ -19,7 +19,7 @@ async function updateAQI() {
   const heat = points.map(p => [
     p.lat,
     p.lon,
-    Math.min(p.aqi / 500, 1)
+    Math.min(p.aqi / 200, 1)
   ]);
 
   heatLayer.setLatLngs(heat);
