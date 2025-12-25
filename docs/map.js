@@ -13,7 +13,7 @@ const heatLayer = L.heatLayer([], {
 }).addTo(map);
 
 async function updateAQI() {
-  const res = await fetch('https://aqi-data-fetch.akshmittal006.workers.dev/aqi');
+  const res = await fetch('https://aqi-data-fetch.akshmittal006.workers.dev/aqi-india-30d');
   const points = await res.json();
 
   const heat = points.map(p => [
