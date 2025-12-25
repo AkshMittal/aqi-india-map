@@ -5,18 +5,26 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   attribution: '© OpenStreetMap'
 }).addTo(map);
 
-fetch('https://aqi-data-fetch.akshmittal006.workers.dev/aqi')
-  .then(r => r.json())
-  .then(points => {
-    const heat = points.map(p => [
-      p.lat,
-      p.lon,
-      Math.min(p.aqi / 500, 1)
-    ]);
+const heatLayer = L.heatLayer([], {
+  radius: 40,
+  blur: 25,
+  maxZoom: 6,
+  willReadFrequently: true
+}).addTo(map);
 
-    L.heatLayer(heat, {
-      radius: 40,
-      blur: 25,
-      maxZoom: 6
-    }).addTo(map);
-  });
+async function updateAQI() {
+  const res = await fetch('https://aqi-data-fetch.akshmittal006.workers.dev/aqi');
+  const points = await res.json();
+
+  const heat = points.map(p => [
+    p.lat,
+    p.lon,
+    Math.min(p.aqi / 500, 1)
+  ]);
+
+  heatLayer.setLatLngs(heat);
+}
+
+updateAQI();
+
+setInterval(updateAQI, 2 * 60 * 1000);
