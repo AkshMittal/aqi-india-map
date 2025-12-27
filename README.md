@@ -60,5 +60,3 @@ Key idea:
 - This repo exists as a learning artifact, not a startup pitch  
 
 ---
-
-**builder gang.**
