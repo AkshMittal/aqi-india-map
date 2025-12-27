@@ -2,3 +2,21 @@ html, body, #map {
   height: 100%;
   margin: 0;
 }
+
+.aqi-legend {
+  background: white;
+  padding: 8px 10px;
+  font-size: 12px;
+  line-height: 18px;
+  color: #333;
+  border-radius: 6px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.2);
+}
+
+.aqi-legend i {
+  width: 12px;
+  height: 12px;
+  float: left;
+  margin-right: 6px;
+  opacity: 0.9;
+}
