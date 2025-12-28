@@ -60,3 +60,25 @@ Key idea:
 - This repo exists as a learning artifact, not a startup pitch  
 
 ---
+
+## Conceptual Note: Sequential Multi-Source Ingestion
+
+This project currently ingests data from a single provider. During development, the ingestion logic was shaped to support volume expansion without compromising correctness.
+
+Key observations:
+
+- Write-time deduplication already ensures convergence: if multiple records point to the same location, the KV layer stabilizes the final state regardless of source.
+- Increasing data volume (via multiple APIs) is therefore not a storage or correctness issue.
+- The primary constraint is execution environment limits (Cloudflare Worker subrequest caps and runtime).
+
+A viable ingestion model under these constraints is sequential exhaustion:
+
+- Ingest one API source at a time
+- Fully exhaust it using a source-specific cursor
+- Move to the next source only after exhaustion
+- Maintain a lightweight source-level cursor that resets once all sources are processed
+
+This approach trades ingestion speed for predictability and platform safety.
+It is documented here as an architectural insight and is intentionally not implemented in the current codebase.
+
+---
